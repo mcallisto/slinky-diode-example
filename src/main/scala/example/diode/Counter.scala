@@ -1,9 +1,5 @@
 package example.diode
 
-import example.diode.hooks.Diode.useDiode
-import example.diode.store.AppCircuit
-import example.diode.store.CounterStore.{Decrement, Increment, Reset}
-
 import slinky.core.FunctionalComponent
 import slinky.core.annotations.react
 import slinky.core.facade.Fragment
@@ -11,17 +7,16 @@ import slinky.web.html._
 
 @react object Counter {
 
-  type Props = Unit
+  case class Props(counter: Int, updateCounter: Int => Unit)
 
-  val component: FunctionalComponent[Unit] = FunctionalComponent[Unit] { _ =>
-    val (counterState, dispatch) = useDiode(App.diodeContext, AppCircuit.zoomTo(_.counter))
+  val component: FunctionalComponent[Props] = FunctionalComponent[Props] { props =>
 
     div(
-      p(s"Count is ${counterState.count}"),
+      p(s"Count is ${props.counter}"),
       div(Fragment(
-       button(onClick := (_ => dispatch(Increment)))("Increment"),
-       button(onClick := (_ => dispatch(Decrement)))("Decrement"),
-       button(onClick := (_ => dispatch(Reset)))("Reset")
+        button(onClick := (_ => props.updateCounter(props.counter + 1)))("Increment"),
+        button(onClick := (_ => props.updateCounter(props.counter - 1)))("Decrement"),
+        button(onClick := (_ => props.updateCounter(0)))("Reset")
       ))
     )
   }
